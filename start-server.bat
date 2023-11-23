@@ -1,6 +1,2 @@
-@REM Migrations
-py manage.py makemigrations
-py manage.py migrate
-
-@REM Run server
+call migrate
 py manage.py runserver

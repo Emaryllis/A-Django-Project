@@ -8,5 +8,7 @@ urlpatterns = [
     path("", views.home),
     path("secondPage", views.secondPage),
     path("help", views.helpPage),
-    path("admin", admin.site.urls)
+    path("admin", admin.site.urls),
+    path("accessRecords", views.accessRecords),
+    path("users", views.users),
 ]

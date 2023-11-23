@@ -1,0 +1,30 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User List</title>
+    <link rel='stylesheet' href={% static "css/main.css" %}>
+</head>
+<body>
+<div>
+    <h1>User List</h1>
+    {% if usersData %}
+        <table>
+            <tr>
+                <th>Full Name</th>
+                <th>Email Address</th>
+            </tr>
+            {% for user in usersData %}
+                <tr>
+                    <td>{{ user.firstName }} {{ user.lastName }}</td>
+                    <td>{{ user.email }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No users found.</p>
+    {% endif %}
+</div>
+</body>
+</html>
