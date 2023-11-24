@@ -1,26 +1,46 @@
-from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
+from DjangoApp import forms
 from DjangoApp.models import AccessRecord, User
 
-# Create your views here.
-def home(request):
-    data = {'homeData': 'From views.py!'}
-    return render(request, 'home.html', data)
+def Home(request):
+    homeData = {'homeData': 'From views.py!'}
+    return render(request, 'client/home.html', homeData)
 
-def secondPage(request):
-    return HttpResponse("<em>My Second App</em>")
+def AccessRecords(request):
+    pageList = AccessRecord.objects.order_by('dateAccessed')
+    data = {'accessRecordsData': pageList}
+    return render(request, 'client/accessRecords.html', data)
 
-def helpPage(request):
-    data = {'helpData': 'The Help Page'}
-    return render(request, 'help.html', data)
+def UserList(request):
+    userList = User.objects.order_by('firstName')
+    data = {'usersData': userList}
+    return render(request, 'client/users.html', data)
 
-def accessRecords(request):
-    webpages_list = AccessRecord.objects.order_by('dateAccessed')
-    data = {'accessRecordsData': webpages_list}
-    return render(request, 'accessRecords.html', data)
+def Form(request):
+    form = forms.Form()
+    if request.method == 'POST':
+        form = forms.Form(request.POST)
+        if form.is_valid():
+            print("VALIDATION SUCCESS!")
+            print("Name: " + form.cleaned_data['name'])
+            print("Email: " + form.cleaned_data['email'])
+            print("Text: " + form.cleaned_data['text'])
+        # Check for bots
+        elif 'botCatcher' in form.errors.keys() and form.errors['botCatcher'].as_text() == 'BOT DETECTED!':
+            print("BOT DETECTED!")
+            # It doesn't blacklist them its just more of a scaring tactic lol
+            return render(request, 'client/formPage.html', {'botCatcher': 'You have been blacklisted.'})
+    return render(request, 'client/formPage.html', {'formDisplay': form})
 
-def users(request):
-    user_list = User.objects.order_by('firstName')
-    data = {'usersData': user_list}
-    return render(request, 'users.html', data)
+def Register(request):
+    form = forms.NewUserForm()
+    if request.method == 'POST':
+        form = forms.NewUserForm(request.POST)
+        if form.is_valid():
+            form.save(commit=True)
+            return HttpResponseRedirect('/')  # Redirect to home page
+        else:
+            print("ERROR: INVALID FORM DATA")
+    return render(request, 'client/newUser.html', {'formDisplay': form})

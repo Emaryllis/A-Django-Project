@@ -1,14 +1,14 @@
-from django.contrib import admin
 from django.urls import path
 
 from DjangoApp import views
 
+app_name = 'DjangoApp'
+
 urlpatterns = [
-    path("home", views.home),
-    path("", views.home),
-    path("secondPage", views.secondPage),
-    path("help", views.helpPage),
-    path("admin", admin.site.urls),
-    path("accessRecords", views.accessRecords),
-    path("users", views.users),
+    path("home", views.Home),
+    path("", views.Home, name="home"),
+    path("accessRecords", views.AccessRecords, name="accessRecords"),
+    path("users", views.UserList, name="users"),
+    path("form", views.Form, name="form"),
+    path("register", views.Register, name="register"),
 ]
