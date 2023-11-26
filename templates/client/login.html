@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Login{% endblock %}
+{% block content %}
+    <h1 class='text-center'>Register</h1>
+    {% if error %}<h4 class='text-danger'>{{ error }}</h4>{% endif %}
+    <form method='post' enctype='multipart/form-data'
+          class='d-flex flex-column align-items-center justify-content-center h-100 p-3'
+    >
+        {% csrf_token %}
+        <div class='input-group mb-3 w-25'>
+            <span class='input-group-text' id='username'>Username</span>
+            <input type='text' class='form-control' placeholder='Username' name='username'>
+        </div>
+        <div class='input-group mb-3 w-25'>
+            <span class='input-group-text' id='password'>Password&nbsp;</span>
+            <input type='password' class='form-control' placeholder='Password' name='password'>
+        </div>
+        <button class='btn btn-primary w-25'>Login</button>
+    </form>
+{% endblock %}

@@ -3,9 +3,9 @@ from importlib import import_module
 from inspect import getmembers, isclass
 
 from django.contrib import admin
+from django.contrib.auth.models import User
 
 # Registers every class in models.py to the admin site
-module = import_module('DjangoApp.models')
-members = getmembers(module, isclass)
-for name, model in members: admin.site.register(model)
-# END
+excludedModels = [User]
+modelModule = import_module('DjangoApp.models')
+[admin.site.register(model) for name, model in getmembers(modelModule, isclass) if model not in excludedModels]

@@ -1,8 +1,12 @@
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from django.shortcuts import redirect, render
+from django.urls import reverse
 
 from DjangoApp import forms
-from DjangoApp.models import AccessRecord, User
+from DjangoApp.forms import UserForm, UserProfileInfoForm
+from DjangoApp.models import AccessRecord
 
 def Home(request):
     homeData = {'homeData': 'From views.py!'}
@@ -13,15 +17,10 @@ def AccessRecords(request):
     data = {'accessRecordsData': pageList}
     return render(request, 'client/accessRecords.html', data)
 
-def UserList(request):
-    userList = User.objects.order_by('firstName')
-    data = {'usersData': userList}
-    return render(request, 'client/users.html', data)
-
 def Form(request):
-    form = forms.Form()
+    form = forms.StarterForm()
     if request.method == 'POST':
-        form = forms.Form(request.POST)
+        form = forms.StarterForm(request.POST)
         if form.is_valid():
             print("VALIDATION SUCCESS!")
             print("Name: " + form.cleaned_data['name'])
@@ -34,13 +33,67 @@ def Form(request):
             return render(request, 'client/formPage.html', {'botCatcher': 'You have been blacklisted.'})
     return render(request, 'client/formPage.html', {'formDisplay': form})
 
+@login_required
+def Dashboard(request):
+    return HttpResponse("You have successfully logged, therefore you are able to see the dashboard!")
+
+@login_required
+def userLogout(request):
+    logout(request)
+    return redirect(reverse('DjangoApp:home'))
+
 def Register(request):
-    form = forms.NewUserForm()
-    if request.method == 'POST':
-        form = forms.NewUserForm(request.POST)
-        if form.is_valid():
-            form.save(commit=True)
-            return HttpResponseRedirect('/')  # Redirect to home page
+    registered = False
+    if request.method != 'POST':
+        userForm = UserForm()
+        profileForm = UserProfileInfoForm()
+    else:
+        # Display both forms
+        userForm = UserForm(data=request.POST)
+        profileForm = UserProfileInfoForm(data=request.POST)
+
+        # Check to see both forms are valid
+        if userForm.is_valid() and profileForm.is_valid():
+
+            # User form algorithm
+            user = userForm.save()  # Save User Form to db
+            user.set_password(user.password)  # Hash password
+            user.save()  # Update with hashed password
+
+            # Profile form algorithm
+            profile = profileForm.save(commit=False)  # Not committed since need to upload profilePic
+            profile.user = user  # Sets UserProfileInfo.user to the user model
+            if 'profilePic' in request.FILES:  # Check if they provided a profile picture
+                profile.profilePic = request.FILES['profilePic']
+            profile.save()  # Update with optional profilePic
+
+            registered = True  # Mark registration as successful
         else:
-            print("ERROR: INVALID FORM DATA")
-    return render(request, 'client/newUser.html', {'formDisplay': form})
+            print(userForm.errors, profileForm.errors)  # Print error if form was invalid
+
+    # This is the render and context dictionary to feed
+    # back to the registration.html file page.
+    return render(request, 'client/register.html',
+                  {'userForm': userForm,
+                   'profileForm': profileForm,
+                   'registered': registered})
+
+def userLogin(request):
+    if request.method != 'POST':
+        return render(request, 'client/login.html')
+
+    # Get username and password
+    username = request.POST.get('username')
+    password = request.POST.get('password')
+
+    user = authenticate(username=username, password=password)
+
+    # If we have a user
+    if not user:
+        print("Login failed: Username: %s. Password: %s" % username, password)
+        return render(request, 'client/login.html', {'error': 'Invalid login details supplied.'})
+    elif not user.is_active:
+        return render(request, 'client/login.html', {'error': 'Your account is inactive.'})
+    else:
+        login(request, user)
+        return redirect(reverse('DjangoApp:dashboard'))

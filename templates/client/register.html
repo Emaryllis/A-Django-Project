@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        {% if registered %}
+            <h1>Thank you for registering!</h1>
+            <a href="{% url 'DjangoApp:login' %}" class="btn btn-primary btn-lg" role="button">Login</a>
+        {% else %}
+            <h1>Register</h1>
+            {# enctype="multipart/form-data" is needed to save user images #}
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ userForm.as_p }}
+                {{ profileForm.as_p }}
+                <input type="submit" name="submit" value="Register" class="btn btn-primary btn-lg" role="button">
+            </form>
+        {% endif %}
+    </div>
+{% endblock %}

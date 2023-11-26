@@ -1,13 +1,5 @@
+from django.contrib.auth.models import User
 from django.db import models
-
-# Create your models here.
-class User(models.Model):
-    firstName = models.CharField(max_length=100)
-    lastName = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
-
-    def __str__(self):
-        return self.firstName + ' ' + self.lastName
 
 class Topic(models.Model):
     topicName = models.CharField(max_length=100, unique=True)
@@ -29,3 +21,14 @@ class AccessRecord(models.Model):
 
     def __str__(self):
         return self.dateAccessed.__str__()
+
+class UserProfileInfo(models.Model):
+    # Extending from django.contrib.auth.models.User model to add our own attributes
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    # Add the additional attributes here
+    portfolioSite = models.URLField(blank=True)
+    profilePic = models.ImageField(upload_to='profilePics', blank=True)
+
+    def __str__(self):
+        return self.user.username

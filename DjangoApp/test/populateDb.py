@@ -7,7 +7,7 @@ django.setup()
 
 import random
 from faker import Faker
-from DjangoApp.models import AccessRecord, Topic, User, Webpage
+from DjangoApp.models import AccessRecord, Topic, Webpage
 
 # Fake data algorithm
 
@@ -28,15 +28,7 @@ def populateData(rowsToPopulate=5):
         fakeWebpage.save()
         accessRecord.save()
 
-def populateUsers(rowsToPopulate=5):
-    for entry in range(rowsToPopulate):
-        # Populate Users
-        fakeUser = User.objects.get_or_create(
-            firstName=faker.first_name(), lastName=faker.last_name(), email=faker.email()
-        )[0]
-        fakeUser.save()
-
 if __name__ == '__main__':
     print('Populating script!')
-    populateUsers(20)
+    populateData(20)
     print('Populating complete!')

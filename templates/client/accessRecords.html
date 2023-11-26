@@ -1,42 +1,24 @@
-<!doctype html>
-<html lang='en'>
-<head>
-    <meta charset='UTF-8'>
-    <meta name='viewport'
-          content='width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0'
-    >
-    <meta http-equiv='X-UA-Compatible' content='ie=edge'>
-    <title>Title</title>
-    <style>
-        table, tr, td, th {
-            border: 1px solid black;
-            border-collapse: collapse;
-        }
-
-        td, th {
-            padding: 5px;
-        }
-    </style>
-</head>
-<body>
-<div>
-    <h1>Access Records: </h1>
-    {% if accessRecordsData %}
-        <table>
-            <tr>
-                <th>Username</th>
-                <th>Date Accessed</th>
-            </tr>
-            {% for accessRecord in accessRecordsData %}
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Form Page{% endblock %}
+{% block content %}
+    <div class='p-4'>
+        <h1>Access Records: </h1>
+        {% if accessRecordsData %}
+            <table class='table'>
                 <tr>
-                    <td>{{ accessRecord.userName }}</td>
-                    <td>{{ accessRecord.dateAccessed }}</td>
+                    <th>Username</th>
+                    <th>Date Accessed</th>
                 </tr>
-            {% endfor %}
-        </table>
-    {% else %}
-        <p>No access records found.</p>
-    {% endif %}
-</div>
-</body>
-</html>
+                {% for accessRecord in accessRecordsData %}
+                    <tr>
+                        <td>{{ accessRecord.userName }}</td>
+                        <td>{{ accessRecord.dateAccessed }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>No access records found.</p>
+        {% endif %}
+    </div>
+{% endblock %}
