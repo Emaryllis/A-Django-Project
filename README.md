@@ -8,7 +8,7 @@ This is a personal Django project built to learn Django
 
 1. **Clone the repository:**
     ```bash
-    git clone https://github.com/Raven-Code/A-Django-Project.git
+    git clone https://github.com/Emaryllis/A-Django-Project.git
     cd A-Django-Project-master
     ```
 
